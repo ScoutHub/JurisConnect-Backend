@@ -1,21 +1,18 @@
 #include <iostream>
 #include "crow.h"
 #include <mariadb/conncpp.hpp>
-#include <string.h>
 #include <string>
 
 #define LISTEN_PORT 19000
 
-std::string showUsers(std::unique_ptr<sql::Connection> &conn) {
+void showUsers(std::unique_ptr<sql::Connection> &conn, std::string& response) {
     try {
-		std::string user = "";
         std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
         sql::ResultSet *res = stmnt->executeQuery("select * from users");
         while (res->next()) {
-			user += "id: " + std::to_string(res->getInt(1)) + ", ";
-			user += "email: " + res->getString(2) + "\n";
+			response += "id: " + std::to_string(res->getInt(1)) + ", ";
+			response += "email: " + res->getString(2) + "\n";
         }
-		return user;
     }
     catch(sql::SQLException& e){
       std::cerr << "Error selecting tasks: " << e.what() << std::endl;
@@ -46,8 +43,9 @@ int main(void) {
     });
 
 	CROW_ROUTE(app, "/api/users")([&conn](){
-		std::string res = showUsers(conn);
-		return res;
+		std::string response = "";
+		showUsers(conn, response);
+		return response;
 	});
 
 	app.port(LISTEN_PORT).multithreaded().run();
