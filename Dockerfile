@@ -35,7 +35,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN g++ -o main main.cpp -lpthread -lmariadbcpp
+RUN g++ -o main main.cpp src/*.cpp -lpthread -lmariadbcpp
 
 EXPOSE 19000
 
