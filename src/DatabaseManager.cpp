@@ -1,5 +1,5 @@
-#include "../include/DatabaseManager.h"
-#include "../include/Logger.h"
+#include "../headers/DatabaseManager.h"
+#include "../headers/Logger.h"
 #include <mariadb/conncpp.hpp>
 #include <string>
 #include <iostream>
