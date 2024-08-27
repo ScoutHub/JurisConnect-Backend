@@ -13,5 +13,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: g++ -v
-      #run: docker build . --file Dockerfile --tag juris_backend:$(date +%s)
+      run: docker build . --file Dockerfile --tag juris_backend:$(date +%s)
