@@ -1,7 +1,7 @@
-#include "../headers/Logger.h"
 #include <cstdio>
 #include <iostream>
 #include <cstdarg>
+#include "Logger.h"
 
 using namespace std;
 
