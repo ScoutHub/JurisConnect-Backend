@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <memory>
 
 #include "DatabaseManager.h"
 #include "Logger.h"
@@ -84,4 +85,9 @@ void DatabaseManager::get_users(vector<User> *users)
 	{
 		cerr << "Error selecting users: " << e.what() << endl;
 	}
+}
+
+unique_ptr<sql::Connection> &DatabaseManager::get_conn()
+{
+	return this->conn;
 }

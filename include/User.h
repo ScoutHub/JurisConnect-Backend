@@ -5,6 +5,7 @@
 #include "crow.h"
 
 using namespace std;
+class DatabaseManager;
 
 class User
 {
@@ -30,6 +31,8 @@ public:
         json_obj["email"] = m_email;
         return json_obj;
     }
+
+    static void get_all(DatabaseManager *databaseManager, vector<User> *users);
 };
 
 #endif
