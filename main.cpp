@@ -3,9 +3,9 @@
 #include <vector>
 
 #include "crow.h"
-#include "bcrypt.h"
 #include "DatabaseManager.h"
 #include "User.h"
+#include "Auth.h"
 
 #define LISTEN_PORT 19000
 
@@ -22,15 +22,9 @@ int main(void)
 		return "Hello World"; 
 	});
 
-	CROW_ROUTE(app, "/test/bcrypt")([]()
-	{
-		return bcrypt::generateHash("Test"); 
-	});
-
 	CROW_ROUTE(app, "/api/users")([&database_manager]()
 	{
-		vector<User> users;
-		User::get_all(&database_manager, &users);
+		vector<User> users = User::getAll(&database_manager);
 		crow::json::wvalue json_resp;
     	json_resp["users"] = crow::json::wvalue::list();
 
@@ -44,7 +38,7 @@ int main(void)
     	return json_resp;
 	});
 
-	CROW_ROUTE(app, "/auth/login").methods(crow::HTTPMethod::Post)([](const crow::request &req)
+	CROW_ROUTE(app, "/auth/login").methods(crow::HTTPMethod::Post)([&database_manager](const crow::request &req)
 	{
         auto body = crow::json::load(req.body);
 
@@ -56,10 +50,10 @@ int main(void)
         string username = body["username"].s();
         string password = body["password"].s();
 
-        return crow::response(200, "Login successful for user: " + username);
+        return crow::response(200, Auth::login(&database_manager, username, password) ? "Login successful" : "Wrong username / password");
 	});
 
-	CROW_ROUTE(app, "/auth/register").methods(crow::HTTPMethod::Post)([](const crow::request &req)
+	CROW_ROUTE(app, "/auth/register").methods(crow::HTTPMethod::Post)([&database_manager](const crow::request &req)
 	{
         auto body = crow::json::load(req.body);
 
@@ -68,12 +62,14 @@ int main(void)
         if (!body.has("lastname") || !body.has("firstname") || !body.has("email") || !body.has("username") || !body.has("password"))
             return crow::response(400, "Missing fields (email | firstname | lastname | username | password)");
 
-		string email = body["username"].s();
-        string firstname = body["password"].s();
-		string lastname = body["password"].s();
+		string email = body["email"].s();
+        string firstname = body["firstname"].s();
+		string lastname = body["lastname"].s();
         string username = body["username"].s();
         string password = body["password"].s();
 
+		const bool registerSuccessful = Auth::createAccount(&database_manager, email, username, firstname, lastname, password);
+		if(!registerSuccessful) return crow::response(400, "Failed to create an account");
         return crow::response(201, "Register successful");
 	});
 

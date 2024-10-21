@@ -20,7 +20,6 @@ public:
 	DatabaseManager();
 	~DatabaseManager() {}
 
-	void get_users(vector<User> *users);
 	unique_ptr<sql::Connection> &get_conn();
 };
 
