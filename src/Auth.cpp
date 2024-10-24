@@ -1,9 +1,11 @@
 #include <string>
 
-#include "Auth.h"
-#include "DatabaseManager.h"
-#include "User.h"
+#include "Auth.hpp"
+#include "DatabaseManager.hpp"
+#include "User.hpp"
 #include "bcrypt.h"
+
+#define ROUND 4
 
 using namespace std;
 
@@ -31,6 +33,6 @@ bool Auth::login(DatabaseManager *databaseManager, string username, string passw
 
 bool Auth::createAccount(DatabaseManager *databaseManager, string email, string username, string firstname, string lastname, string password)
 {
-    password = bcrypt::generateHash(password);
+    password = bcrypt::generateHash(password, ROUND);
     return User::save(databaseManager, new User(lastname, firstname, email, username, password));
 }

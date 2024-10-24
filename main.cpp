@@ -3,9 +3,14 @@
 #include <vector>
 
 #include "crow.h"
-#include "DatabaseManager.h"
-#include "User.h"
-#include "Auth.h"
+#include "DatabaseManager.hpp"
+#include "User.hpp"
+#include "Auth.hpp"
+
+// STATUS CODE
+#define BAD_REQUEST 400
+#define RESPONSE_OK 200
+#define CREATED     201
 
 #define LISTEN_PORT 19000
 
@@ -29,38 +34,38 @@ int main(void)
     	json_resp["users"] = crow::json::wvalue::list();
 
 		vector<crow::json::wvalue> json_users;
-		for (const auto &user : users)
+		for (const User &user : users)
 		{
 			json_users.push_back(user.to_json());
 		}
 		json_resp["users"] = move(json_users);
-		
-    	return json_resp;
+	
+	    return crow::response(RESPONSE_OK, json_resp);
 	});
 
 	CROW_ROUTE(app, "/auth/login").methods(crow::HTTPMethod::Post)([&database_manager](const crow::request &req)
 	{
-        auto body = crow::json::load(req.body);
+        crow::json::rvalue body = crow::json::load(req.body);
 
         if (!body)
-            return crow::response(400, "Invalid JSON format");
+            return crow::response(BAD_REQUEST, "Invalid JSON format");
         if (!body.has("username") || !body.has("password"))
-            return crow::response(400, "Missing username or password");
+            return crow::response(BAD_REQUEST, "Missing username or password");
 
         string username = body["username"].s();
         string password = body["password"].s();
 
-        return crow::response(200, Auth::login(&database_manager, username, password) ? "Login successful" : "Wrong username / password");
+        return crow::response(RESPONSE_OK, Auth::login(&database_manager, username, password) ? "Login successful" : "Wrong username / password");
 	});
 
 	CROW_ROUTE(app, "/auth/register").methods(crow::HTTPMethod::Post)([&database_manager](const crow::request &req)
 	{
-        auto body = crow::json::load(req.body);
+        crow::json::rvalue body = crow::json::load(req.body);
 
         if (!body)
-            return crow::response(400, "Invalid JSON format");
+            return crow::response(BAD_REQUEST, "Invalid JSON format");
         if (!body.has("lastname") || !body.has("firstname") || !body.has("email") || !body.has("username") || !body.has("password"))
-            return crow::response(400, "Missing fields (email | firstname | lastname | username | password)");
+            return crow::response(BAD_REQUEST, "Missing fields (email | firstname | lastname | username | password)");
 
 		string email = body["email"].s();
         string firstname = body["firstname"].s();
@@ -69,8 +74,8 @@ int main(void)
         string password = body["password"].s();
 
 		const bool registerSuccessful = Auth::createAccount(&database_manager, email, username, firstname, lastname, password);
-		if(!registerSuccessful) return crow::response(400, "Failed to create an account");
-        return crow::response(201, "Register successful");
+		if(!registerSuccessful) return crow::response(BAD_REQUEST, "Failed to create an account");
+        return crow::response(CREATED, "Register successful");
 	});
 
 	app.port(LISTEN_PORT).multithreaded().run();

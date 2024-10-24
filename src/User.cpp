@@ -1,6 +1,6 @@
 #include <string>
-#include "User.h"
-#include "DatabaseManager.h"
+#include "User.hpp"
+#include "DatabaseManager.hpp"
 
 using namespace std;
 

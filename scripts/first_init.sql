@@ -9,5 +9,3 @@ CREATE TABLE IF NOT EXISTS users (
     firstname VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
-
-INSERT INTO users (email, firstname, lastname, username, password) VALUES ('sample@example.com', 'john', 'doe', 'johndoe', '$2b$10$Ses/fGaSSJC1i6WaJjwB4uEMU5KWAU0IeejScmXgrd2ujZC0nCXu2');
