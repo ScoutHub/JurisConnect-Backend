@@ -26,8 +26,8 @@ public:
     crow::json::wvalue to_json() const
     {
         crow::json::wvalue json_obj;
-        json_obj["lastname"] = m_lastname;
-        json_obj["firstname"] = m_firstname;
+        json_obj["lastName"] = m_lastname;
+        json_obj["firstName"] = m_firstname;
         json_obj["username"] = m_username;
         json_obj["email"] = m_email;
         return json_obj;

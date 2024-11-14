@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "crow.h"
+#include "jwt/jwt.hpp"
+
 #include "DatabaseManager.hpp"
 #include "User.hpp"
 #include "Auth.hpp"
@@ -15,12 +17,22 @@
 #define LISTEN_PORT 19000
 
 using namespace std;
+using namespace jwt::params;
 
 int main(void)
 {
 	DatabaseManager database_manager;
-
 	crow::SimpleApp app;
+
+	string key = "secret";
+	jwt::jwt_object obj{algorithm("HS256"), payload({{"some", "token"}}), secret(key)};
+
+	string enc_str = obj.signature();
+  	cout << "token: " << enc_str << endl;
+
+	auto dec_obj = jwt::decode(enc_str, algorithms({"HS256"}), secret(key));
+	string some_value = dec_obj.payload().get_claim_value<string>("some");
+  	cout << "some_value: " << some_value << endl;
 
 	CROW_ROUTE(app, "/test")([]()
 	{
@@ -64,14 +76,18 @@ int main(void)
 
         if (!body)
             return crow::response(BAD_REQUEST, "Invalid JSON format");
-        if (!body.has("lastname") || !body.has("firstname") || !body.has("email") || !body.has("username") || !body.has("password"))
+        if (!body.has("lastName") || !body.has("firstName") || !body.has("email") || !body.has("username") || !body.has("password") || !body.has("confirmPassword"))
             return crow::response(BAD_REQUEST, "Missing fields (email | firstname | lastname | username | password)");
 
 		string email = body["email"].s();
-        string firstname = body["firstname"].s();
-		string lastname = body["lastname"].s();
+        string firstname = body["firstName"].s();
+		string lastname = body["lastName"].s();
         string username = body["username"].s();
         string password = body["password"].s();
+		string confirm_password = body["confirmPassword"].s();
+		
+		if(password != confirm_password)
+		    return crow::response(BAD_REQUEST, "Password doesn't match");
 
 		const bool registerSuccessful = Auth::createAccount(&database_manager, email, username, firstname, lastname, password);
 		if(!registerSuccessful) return crow::response(BAD_REQUEST, "Failed to create an account");

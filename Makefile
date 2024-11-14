@@ -1,5 +1,5 @@
 CC = g++
-CC_FLAGS = -I./Bcrypt.cpp/include/ -I./include/ -lpthread -lmariadbcpp
+CC_FLAGS = -I./Bcrypt.cpp/include/ -I./include/ -lpthread -lmariadbcpp -lcrypto
 SRC = main.cpp $(wildcard src/*.cpp) $(wildcard Bcrypt.cpp/src/*.cpp)
 TARGET = main
 

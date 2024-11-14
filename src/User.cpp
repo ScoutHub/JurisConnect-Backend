@@ -38,8 +38,8 @@ bool User::save(DatabaseManager *databaseManager, User *user)
     try
     {
         unique_ptr<sql::PreparedStatement> pstmt(databaseManager->get_conn()->prepareStatement(
-            "INSERT INTO users (lastname, firstname, email, username, password) VALUES (?, ?, ?, ?, ?) "
-            "ON DUPLICATE KEY UPDATE lastname = VALUES(lastname), firstname = VALUES(firstname), "
+            "INSERT INTO users (last_name, first_name, email, username, password) VALUES (?, ?, ?, ?, ?) "
+            "ON DUPLICATE KEY UPDATE last_name = VALUES(last_name), first_name = VALUES(first_name), "
             "email = VALUES(email), password = VALUES(password)"));
 
         pstmt->setString(1, user->getLastname());
