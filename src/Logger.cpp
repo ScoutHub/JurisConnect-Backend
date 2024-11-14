@@ -1,11 +1,11 @@
-#include "../headers/Logger.h"
 #include <cstdio>
 #include <iostream>
 #include <cstdarg>
+#include "Logger.hpp"
 
 using namespace std;
 
-void Logger::Info(const char* message, ...)
+void Logger::Info(const char *message, ...)
 {
 	va_list args;
 	va_start(args, message);
@@ -16,7 +16,7 @@ void Logger::Info(const char* message, ...)
 	va_end(args);
 }
 
-void Logger::Error(const char* message, ...)
+void Logger::Error(const char *message, ...)
 {
 	va_list args;
 	va_start(args, message);
@@ -26,4 +26,3 @@ void Logger::Error(const char* message, ...)
 
 	va_end(args);
 }
-
