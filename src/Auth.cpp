@@ -9,12 +9,12 @@
 
 using namespace std;
 
-bool Auth::login(DatabaseManager *databaseManager, string username, string password)
+bool Auth::login(DatabaseManager *databaseManager, string email, string password)
 {
     try
     {
-        unique_ptr<sql::PreparedStatement> stmnt(databaseManager->get_conn()->prepareStatement("SELECT password FROM users WHERE username = ?"));
-        stmnt->setString(1, username);
+        unique_ptr<sql::PreparedStatement> stmnt(databaseManager->get_conn()->prepareStatement("SELECT password FROM users WHERE email = ?"));
+        stmnt->setString(1, email);
         unique_ptr<sql::ResultSet> res(stmnt->executeQuery());
 
         string hashedPassword = "";
