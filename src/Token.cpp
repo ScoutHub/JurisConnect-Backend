@@ -14,7 +14,7 @@ using namespace std;
 jwt::jwt_object Token::generate_token(string &email)
 {
     jwt::jwt_object token{algorithm(ALGORITHM), payload({{"email", email}}), secret(SECRET)};
-    token.add_claim("exp", chrono::system_clock::now() + chrono::seconds{10});
+    token.add_claim("exp", chrono::system_clock::now() + chrono::seconds{3600});
 
     return token;
 }
@@ -24,6 +24,7 @@ bool Token::check_token(string &token)
     try
     {
         jwt::jwt_object dec_obj = jwt::decode(token, algorithms({ALGORITHM}), secret(SECRET));
+
         return true;
     }
     catch (...)

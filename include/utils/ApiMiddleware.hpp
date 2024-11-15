@@ -1,9 +1,11 @@
 #ifndef _AUTH_MIDDLEWARE_H
 #define _AUTH_MIDDLEWARE_H
 
-#include "crow.h"
 #include <iostream>
 #include <string>
+
+#include "crow.h"
+#include "Token.hpp"
 
 using namespace std;
 
@@ -18,7 +20,10 @@ struct ApiMiddleware : crow::ILocalMiddleware
         string bearer = req.get_header_value("Authorization");
         string token = bearer.substr(7);
 
-        cout << "Token: " << token << endl;
+        if(!Token::check_token(token)) {
+            res.code = 403;
+            res.end();
+        }
     }
 
     void after_handle(crow::request &req, crow::response &res, context &ctx)

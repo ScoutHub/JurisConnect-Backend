@@ -1,3 +1,6 @@
+#ifndef _TOKEN_H
+#define _TOKEN_H
+
 #include <string.h>
 #include "jwt/jwt.hpp"
 
@@ -12,3 +15,5 @@ public:
     static jwt::jwt_object generate_token(string &email);
     static bool check_token(string &token);
 };
+
+#endif
