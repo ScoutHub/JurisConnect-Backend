@@ -2,6 +2,7 @@
 #define _AUTH_ROUTES_H
 
 #include <string>
+#include <iostream>
 
 #include "crow.h"
 #include "jwt/jwt.hpp"
@@ -90,6 +91,21 @@ void setup_auth_routes(crow::App<ApiMiddleware> &app, DatabaseManager &database_
             return crow::response(BAD_REQUEST, "Failed to create an account");
 
         return crow::response(CREATED, generate_json_token(email));
+    });
+
+    /*
+        route: /auth/refresh/token
+        method: GET
+    */
+    CROW_ROUTE(app, "/auth/refresh/token")([&database_manager](const crow::request &req)
+    {
+        string token = req.get_header_value("X-REFRESH-TOKEN");
+        if(!Token::check_token(token))
+            return crow::response(UNAUTHORIZED, "Invalid Token");
+        
+        string email = Token::get_email(token);
+
+        return crow::response(RESPONSE_OK, generate_json_token(email));
     });
 }
 

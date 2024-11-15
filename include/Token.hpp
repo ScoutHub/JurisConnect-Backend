@@ -14,6 +14,7 @@ public:
     ~Token() {};
     static jwt::jwt_object generate_access_token(string &email);
     static jwt::jwt_object generate_refresh_token(string &email);
+    static string get_email(string &token);
     static bool check_token(string &token);
 };
 
