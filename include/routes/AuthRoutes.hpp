@@ -23,8 +23,15 @@ crow::json::wvalue generate_json_token(string &email)
     return json_resp;
 }
 
-void setupAuthRoutes(crow::SimpleApp &app, DatabaseManager &database_manager)
+void setup_auth_routes(crow::SimpleApp &app, DatabaseManager &database_manager)
 {
+    /*
+        route: /auth/login
+        method: POST
+        body:
+            string email
+            string password
+    */
     CROW_ROUTE(app, "/auth/login").methods(crow::HTTPMethod::Post)([&database_manager](const crow::request &req)
     {
         crow::json::rvalue body = crow::json::load(req.body);
@@ -43,6 +50,17 @@ void setupAuthRoutes(crow::SimpleApp &app, DatabaseManager &database_manager)
         return crow::response(200, generate_json_token(email));
     });
 
+    /*
+        route: /auth/register
+        method: POST
+        body:
+            string email
+            string username
+            string firstName
+            string lastName
+            string password
+            string confirmPassword
+    */
     CROW_ROUTE(app, "/auth/register").methods(crow::HTTPMethod::Post)([&database_manager](const crow::request &req)
     {
         crow::json::rvalue body = crow::json::load(req.body);

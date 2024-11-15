@@ -5,7 +5,11 @@
 #include "DatabaseManager.hpp"
 #include "User.hpp"
 
-void setupUserRoutes(crow::SimpleApp& app, DatabaseManager& database_manager) {
+void setup_user_routes(crow::SimpleApp& app, DatabaseManager& database_manager) {
+    /*
+        route: /api/users
+        method: GET
+    */
     CROW_ROUTE(app, "/api/users")([&database_manager]()
     {
         std::vector<User> users = User::getAll(&database_manager);

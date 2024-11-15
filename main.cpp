@@ -20,8 +20,8 @@ int main(void)
 		return "Hello World"; 
 	});
 
-    setupAuthRoutes(app, database_manager);
-    setupUserRoutes(app, database_manager);
+    setup_auth_routes(app, database_manager);
+    setup_user_routes(app, database_manager);
 
 	app.port(LISTEN_PORT).multithreaded().run();
 	return 0;
