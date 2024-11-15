@@ -9,7 +9,9 @@
 #include "DatabaseManager.hpp"
 #include "Auth.hpp"
 #include "Token.hpp"
+
 #include "utils/HttpUtils.hpp"
+#include "utils/ApiMiddleware.hpp"
 
 using namespace std;
 using namespace jwt::params;
@@ -24,7 +26,7 @@ crow::json::wvalue generate_json_token(string &email)
     return json_resp;
 }
 
-void setup_auth_routes(crow::SimpleApp &app, DatabaseManager &database_manager)
+void setup_auth_routes(crow::App<ApiMiddleware> &app, DatabaseManager &database_manager)
 {
     /*
         route: /auth/login

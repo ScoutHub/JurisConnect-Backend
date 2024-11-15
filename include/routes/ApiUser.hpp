@@ -4,14 +4,16 @@
 #include "crow.h"
 #include "DatabaseManager.hpp"
 #include "User.hpp"
-#include "utils/HttpUtils.hpp"
 
-void setup_user_routes(crow::SimpleApp& app, DatabaseManager& database_manager) {
+#include "utils/HttpUtils.hpp"
+#include "utils/ApiMiddleware.hpp"
+
+void setup_user_routes(crow::App<ApiMiddleware> &app, DatabaseManager& database_manager) {
     /*
         route: /api/users
         method: GET
     */
-    CROW_ROUTE(app, "/api/users")([&database_manager]()
+    CROW_ROUTE(app, "/api/users").CROW_MIDDLEWARES(app, ApiMiddleware)([&database_manager]()
     {
         std::vector<User> users = User::getAll(&database_manager);
         crow::json::wvalue json_resp;
