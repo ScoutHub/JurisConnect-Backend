@@ -8,7 +8,7 @@
 using namespace jwt::params;
 using namespace std;
 
-#define SECRET "secretkey"
+#define SECRET "#"
 #define ALGORITHM "HS256"
 
 jwt::jwt_object Token::generate_token(string &email)
