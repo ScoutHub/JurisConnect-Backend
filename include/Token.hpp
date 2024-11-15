@@ -12,7 +12,8 @@ class Token
 public:
     Token() {};
     ~Token() {};
-    static jwt::jwt_object generate_token(string &email);
+    static jwt::jwt_object generate_access_token(string &email);
+    static jwt::jwt_object generate_refresh_token(string &email);
     static bool check_token(string &token);
 };
 

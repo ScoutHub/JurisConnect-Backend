@@ -18,10 +18,13 @@ using namespace jwt::params;
 
 crow::json::wvalue generate_json_token(string &email)
 {
-    jwt::jwt_object token = Token::generate_token(email);
+    jwt::jwt_object access_token = Token::generate_access_token(email);
+    jwt::jwt_object refresh_token = Token::generate_refresh_token(email);
+
     crow::json::wvalue json_resp;
-    json_resp["email"] = email;
-    json_resp["token"] = token.signature();
+
+    json_resp["access_token"] = access_token.signature();
+    json_resp["refresh_token"] = refresh_token.signature();
     
     return json_resp;
 }
