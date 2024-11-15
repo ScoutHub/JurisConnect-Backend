@@ -9,6 +9,7 @@
 #include "DatabaseManager.hpp"
 #include "Auth.hpp"
 #include "Token.hpp"
+#include "utils/HttpUtils.hpp"
 
 using namespace std;
 using namespace jwt::params;
@@ -37,17 +38,17 @@ void setup_auth_routes(crow::SimpleApp &app, DatabaseManager &database_manager)
         crow::json::rvalue body = crow::json::load(req.body);
 
         if (!body)
-            return crow::response(400, "Invalid JSON format");
+            return crow::response(BAD_REQUEST, "Invalid JSON format");
         if (!body.has("email") || !body.has("password"))
-            return crow::response(400, "Missing email or password");
+            return crow::response(BAD_REQUEST, "Missing email or password");
 
         string email = body["email"].s();
         string password = body["password"].s();
 
         if (!Auth::login(&database_manager, email, password))
-            return crow::response(200, "Wrong email / password");
+            return crow::response(RESPONSE_OK, "Wrong email / password");
 
-        return crow::response(200, generate_json_token(email));
+        return crow::response(RESPONSE_OK, generate_json_token(email));
     });
 
     /*
@@ -66,9 +67,9 @@ void setup_auth_routes(crow::SimpleApp &app, DatabaseManager &database_manager)
         crow::json::rvalue body = crow::json::load(req.body);
 
         if (!body)
-            return crow::response(400, "Invalid JSON format");
+            return crow::response(BAD_REQUEST, "Invalid JSON format");
         if (!body.has("lastName") || !body.has("firstName") || !body.has("email") || !body.has("username") || !body.has("password") || !body.has("confirmPassword"))
-            return crow::response(400, "Missing fields (email | firstname | lastname | username | password)");
+            return crow::response(BAD_REQUEST, "Missing fields (email | firstname | lastname | username | password)");
 
         string email = body["email"].s();
         string firstname = body["firstName"].s();
@@ -78,12 +79,12 @@ void setup_auth_routes(crow::SimpleApp &app, DatabaseManager &database_manager)
         string confirm_password = body["confirmPassword"].s();
 
         if (password != confirm_password)
-            return crow::response(400, "Password doesn't match");
+            return crow::response(BAD_REQUEST, "Password doesn't match");
 
         if(!Auth::createAccount(&database_manager, email, username, firstname, lastname, password))
-            return crow::response(400, "Failed to create an account");
+            return crow::response(BAD_REQUEST, "Failed to create an account");
 
-        return crow::response(201, generate_json_token(email));
+        return crow::response(CREATED, generate_json_token(email));
     });
 }
 

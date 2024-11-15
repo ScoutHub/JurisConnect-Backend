@@ -4,6 +4,7 @@
 #include "crow.h"
 #include "DatabaseManager.hpp"
 #include "User.hpp"
+#include "utils/HttpUtils.hpp"
 
 void setup_user_routes(crow::SimpleApp& app, DatabaseManager& database_manager) {
     /*
@@ -22,7 +23,7 @@ void setup_user_routes(crow::SimpleApp& app, DatabaseManager& database_manager) 
         }
         json_resp["users"] = std::move(json_users);
 
-        return crow::response(200, json_resp);
+        return crow::response(RESPONSE_OK, json_resp);
     });
 }
 
