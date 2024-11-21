@@ -11,6 +11,8 @@
 
 using namespace std;
 
+string DatabaseManager::keys = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+
 vector<string> get_env_file(const char *file_path)
 {
 	vector<string> vars;
@@ -64,4 +66,13 @@ DatabaseManager::DatabaseManager()
 unique_ptr<sql::Connection> &DatabaseManager::get_conn()
 {
 	return this->conn;
+}
+
+string DatabaseManager::generate_uuid()
+{
+	size_t n = 20;
+	string uuid = "";
+	while (--n)
+		uuid += DatabaseManager::keys[rand() % DatabaseManager::keys.size()];
+	return uuid;
 }

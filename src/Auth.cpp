@@ -33,6 +33,8 @@ bool Auth::login(DatabaseManager *databaseManager, string email, string password
 
 bool Auth::createAccount(DatabaseManager *databaseManager, string email, string username, string firstname, string lastname, string password)
 {
+    const string uuid = DatabaseManager::generate_uuid();
     password = bcrypt::generateHash(password, ROUND);
-    return User::save(databaseManager, new User(lastname, firstname, email, username, password));
+
+    return User::save(databaseManager, new User(uuid, lastname, firstname, email, username, password));
 }

@@ -20,7 +20,10 @@ public:
 	DatabaseManager();
 	~DatabaseManager() {}
 
+	static string keys;
+	
 	unique_ptr<sql::Connection> &get_conn();
+	static string generate_uuid();
 };
 
 #endif

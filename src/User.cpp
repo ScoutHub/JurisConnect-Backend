@@ -13,7 +13,7 @@ vector<User> User::getAll(DatabaseManager *databaseManager)
         sql::ResultSet *res = stmnt->executeQuery("select * from users");
         while (res->next())
         {
-            int id = (int)res->getInt(1);
+            string id = (string)res->getString(1);
             string email = (string)res->getString(2);
             string username = (string)res->getString(3);
             string lastname = (string)res->getString(4);
@@ -38,15 +38,16 @@ bool User::save(DatabaseManager *databaseManager, User *user)
     try
     {
         unique_ptr<sql::PreparedStatement> pstmt(databaseManager->get_conn()->prepareStatement(
-            "INSERT INTO users (last_name, first_name, email, username, password) VALUES (?, ?, ?, ?, ?) "
-            "ON DUPLICATE KEY UPDATE last_name = VALUES(last_name), first_name = VALUES(first_name), "
+            "INSERT INTO users (id, last_name, first_name, email, username, password) VALUES (?, ?, ?, ?, ?, ?) "
+            "ON DUPLICATE KEY UPDATE id = VALUES(id), last_name = VALUES(last_name), first_name = VALUES(first_name), "
             "email = VALUES(email), password = VALUES(password)"));
 
-        pstmt->setString(1, user->getLastname());
-        pstmt->setString(2, user->getFirstname());
-        pstmt->setString(3, user->getEmail());
-        pstmt->setString(4, user->getUsername());
-        pstmt->setString(5, user->getPassword());
+        pstmt->setString(1, user->getId());
+        pstmt->setString(2, user->getLastname());
+        pstmt->setString(3, user->getFirstname());
+        pstmt->setString(4, user->getEmail());
+        pstmt->setString(5, user->getUsername());
+        pstmt->setString(6, user->getPassword());
         pstmt->executeUpdate();
         return true;
     }
