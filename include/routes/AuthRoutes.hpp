@@ -74,15 +74,15 @@ void setup_auth_routes(crow::App<ApiMiddleware> &app, DatabaseManager &database_
 
         if (!body)
             return crow::response(BAD_REQUEST, "Invalid JSON format");
-        if (!body.has("lastName") || !body.has("firstName") || !body.has("email") || !body.has("username") || !body.has("password") || !body.has("confirmPassword"))
+        if (!body.has("last_name") || !body.has("first_name") || !body.has("email") || !body.has("username") || !body.has("password") || !body.has("confirm_password"))
             return crow::response(BAD_REQUEST, "Missing fields (email | firstname | lastname | username | password)");
 
         string email = body["email"].s();
-        string firstname = body["firstName"].s();
-        string lastname = body["lastName"].s();
+        string firstname = body["first_name"].s();
+        string lastname = body["last_name"].s();
         string username = body["username"].s();
         string password = body["password"].s();
-        string confirm_password = body["confirmPassword"].s();
+        string confirm_password = body["confirm_password"].s();
 
         if (password != confirm_password)
             return crow::response(BAD_REQUEST, "Password doesn't match");

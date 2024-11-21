@@ -42,6 +42,10 @@ public:
     string getEmail() { return this->m_email; }
     string getPassword() { return this->m_password; }
 
+    void setLastName(string lastname) { this->m_lastname = lastname; }
+    void setFirstName(string firstname) { this->m_firstname = firstname; }
+    void setEmail(string email) { this->m_email = email; }
+    void setUsername(string username) { this->m_username = username; }
     void setPassword(string password) { this->m_password = password; }
 
     static vector<User> getAll(DatabaseManager *databaseManager);

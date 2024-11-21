@@ -47,6 +47,35 @@ void setup_user_routes(crow::App<ApiMiddleware> &app, DatabaseManager& database_
         json_resp = user->to_json();
         return crow::response(RESPONSE_OK, json_resp);
     });
+    /*
+        route: /api/users/id
+        method: PUT
+        protected by token
+        body:
+            string last_name
+            string first_name
+            string email
+            string username
+    */
+    CROW_ROUTE(app, "/api/users/<string>").CROW_MIDDLEWARES(app, ApiMiddleware).methods(crow::HTTPMethod::Put)([&database_manager](const crow::request &req, const string& id)
+    {
+        crow::json::rvalue body = crow::json::load(req.body);
+        optional<User> user = User::get(&database_manager, id);
+        
+        if (!user.has_value()) {
+            return crow::response(NOT_FOUND, "User not found");
+        }
+
+        user->setFirstName(body["first_name"].s());
+        user->setLastName(body["last_name"].s());
+        user->setUsername(body["username"].s());
+        user->setEmail(body["email"].s());
+        User::save(&database_manager, &(*user));
+
+        crow::json::wvalue json_resp;
+        json_resp = user->to_json();
+        return crow::response(RESPONSE_OK, json_resp);
+    });
 }
 
 
