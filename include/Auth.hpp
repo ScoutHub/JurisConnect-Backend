@@ -2,6 +2,7 @@
 #define _AUTH_H
 
 #include <string>
+#include <optional>
 
 class DatabaseManager;
 using namespace std;
@@ -9,8 +10,8 @@ using namespace std;
 class Auth
 {
 public:
-    static bool login(DatabaseManager *databaseManager, string username, string password);
-    static bool createAccount(DatabaseManager *databaseManager,
+    static optional<string> login(DatabaseManager *databaseManager, string username, string password);
+    static optional<string> createAccount(DatabaseManager *databaseManager,
                               string email,
                               string username,
                               string firstname,

@@ -9,11 +9,11 @@
 
 using namespace std;
 
-bool Auth::login(DatabaseManager *databaseManager, string email, string password)
+optional<string> Auth::login(DatabaseManager *databaseManager, string email, string password)
 {
     try
     {
-        unique_ptr<sql::PreparedStatement> stmnt(databaseManager->get_conn()->prepareStatement("SELECT password FROM users WHERE email = ?"));
+        unique_ptr<sql::PreparedStatement> stmnt(databaseManager->get_conn()->prepareStatement("SELECT password, id FROM users WHERE email = ?"));
         stmnt->setString(1, email);
         unique_ptr<sql::ResultSet> res(stmnt->executeQuery());
 
@@ -21,20 +21,26 @@ bool Auth::login(DatabaseManager *databaseManager, string email, string password
         if (res->next())
         {
             hashedPassword = res->getString("password");
+            if (bcrypt::validatePassword(password, hashedPassword))
+                return string(res->getString("id"));
         }
-        return bcrypt::validatePassword(password, hashedPassword);
+        return nullopt;
     }
     catch (sql::SQLException &e)
     {
         cerr << "Error selecting user: " << e.what() << endl;
-        return false;
+        return nullopt;
     }
 }
 
-bool Auth::createAccount(DatabaseManager *databaseManager, string email, string username, string firstname, string lastname, string password)
+optional<string> Auth::createAccount(DatabaseManager *databaseManager, string email, string username, string firstname, string lastname, string password)
 {
     const string uuid = DatabaseManager::generate_uuid();
     password = bcrypt::generateHash(password, ROUND);
 
-    return User::save(databaseManager, new User(uuid, lastname, firstname, email, username, password));
+    if (!User::save(databaseManager, new User(uuid, lastname, firstname, email, username, password)))
+    {
+        return nullopt;
+    }
+    return uuid;
 }

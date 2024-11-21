@@ -17,16 +17,16 @@
 using namespace std;
 using namespace jwt::params;
 
-crow::json::wvalue generate_json_token(string &email)
+crow::json::wvalue generate_json_token(string &id)
 {
-    jwt::jwt_object access_token = Token::generate_access_token(email);
-    jwt::jwt_object refresh_token = Token::generate_refresh_token(email);
+    jwt::jwt_object access_token = Token::generate_access_token(id);
+    jwt::jwt_object refresh_token = Token::generate_refresh_token(id);
 
     crow::json::wvalue json_resp;
 
     json_resp["access_token"] = access_token.signature();
     json_resp["refresh_token"] = refresh_token.signature();
-    
+
     return json_resp;
 }
 
@@ -51,10 +51,12 @@ void setup_auth_routes(crow::App<ApiMiddleware> &app, DatabaseManager &database_
         string email = body["email"].s();
         string password = body["password"].s();
 
-        if (!Auth::login(&database_manager, email, password))
-            return crow::response(RESPONSE_OK, "Wrong email / password");
+        optional<string> id = Auth::login(&database_manager, email, password);
 
-        return crow::response(RESPONSE_OK, generate_json_token(email));
+        if (!id.has_value())
+            return crow::response(NOT_FOUND, "Wrong email / password");
+
+        return crow::response(RESPONSE_OK, generate_json_token(*id));
     });
 
     /*
@@ -87,10 +89,11 @@ void setup_auth_routes(crow::App<ApiMiddleware> &app, DatabaseManager &database_
         if (password != confirm_password)
             return crow::response(BAD_REQUEST, "Password doesn't match");
 
-        if(!Auth::createAccount(&database_manager, email, username, firstname, lastname, password))
+        optional<string> id = Auth::createAccount(&database_manager, email, username, firstname, lastname, password);
+        if(!id.has_value())
             return crow::response(BAD_REQUEST, "Failed to create an account");
 
-        return crow::response(CREATED, generate_json_token(email));
+        return crow::response(CREATED, generate_json_token(*id));
     });
 
     /*
@@ -105,9 +108,9 @@ void setup_auth_routes(crow::App<ApiMiddleware> &app, DatabaseManager &database_
         if(!Token::check_token(token))
             return crow::response(UNAUTHORIZED, "Invalid Token");
         
-        string email = Token::get_email(token);
+        string id = Token::get_id(token);
 
-        return crow::response(RESPONSE_OK, generate_json_token(email));
+        return crow::response(RESPONSE_OK, generate_json_token(id));
     });
 }
 

@@ -13,6 +13,7 @@ struct ApiMiddleware : crow::ILocalMiddleware
 {
     struct context
     {
+        string id;
     };
 
     void before_handle(crow::request &req, crow::response &res, context &ctx)
@@ -29,7 +30,10 @@ struct ApiMiddleware : crow::ILocalMiddleware
         if (!Token::check_token(token)) {
             res.code = 403;
             res.end();
+            return;
         }
+
+        ctx.id = Token::get_id(token);
     }
 
     void after_handle(crow::request &req, crow::response &res, context &ctx)
