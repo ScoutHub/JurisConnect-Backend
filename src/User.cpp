@@ -1,8 +1,5 @@
-#include <string>
 #include "User.hpp"
 #include "DatabaseManager.hpp"
-
-using namespace std;
 
 vector<User> User::getAll(DatabaseManager *databaseManager)
 {
@@ -55,5 +52,32 @@ bool User::save(DatabaseManager *databaseManager, User *user)
     {
         std::cerr << "Error saving user: " << e.what() << std::endl;
         return false;
+    }
+}
+
+optional<User> User::get(DatabaseManager *databaseManager, string id)
+{
+    try
+    {
+        unique_ptr<sql::PreparedStatement> stmnt(databaseManager->get_conn()->prepareStatement("SELECT id, last_name, first_name, email, username FROM users WHERE id = ?"));
+        stmnt->setString(1, id);
+        unique_ptr<sql::ResultSet> res(stmnt->executeQuery());
+
+        if (res->next())
+        {
+            const string id = string(res->getString("id"));
+            const string email = string(res->getString("email"));
+            const string last_name = string(res->getString("last_name"));
+            const string first_name = string(res->getString("first_name"));
+            const string username = string(res->getString("username"));
+
+            return User(id, last_name, first_name, email, username);
+        }
+        return nullopt;
+    }
+    catch (sql::SQLException &e)
+    {
+        cerr << "Error fetching user: " << e.what() << endl;
+        return nullopt;
     }
 }

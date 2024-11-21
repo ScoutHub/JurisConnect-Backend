@@ -18,9 +18,15 @@ struct ApiMiddleware : crow::ILocalMiddleware
     void before_handle(crow::request &req, crow::response &res, context &ctx)
     {
         string bearer = req.get_header_value("Authorization");
+
+        if (bearer.size() == 0) {
+            res.code = 403;
+            res.end();
+            return;
+        }
         string token = bearer.substr(7);
 
-        if(!Token::check_token(token)) {
+        if (!Token::check_token(token)) {
             res.code = 403;
             res.end();
         }

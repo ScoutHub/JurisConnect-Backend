@@ -2,6 +2,7 @@
 #define _USER_H
 
 #include <string>
+#include <optional>
 #include "crow.h"
 
 using namespace std;
@@ -18,7 +19,7 @@ private:
     string m_password;
 
 public:
-    User();
+    User() {}
     User(string id, string lastname, string firstname, string email, string username) : m_id(id), m_lastname(lastname), m_firstname(firstname), m_username(username), m_email(email) {}
     User(string id, string lastname, string firstname, string email, string username, string password) : m_id(id), m_lastname(lastname), m_firstname(firstname), m_username(username), m_email(email), m_password(password) {}
     ~User() {};
@@ -45,6 +46,7 @@ public:
 
     static vector<User> getAll(DatabaseManager *databaseManager);
     static bool save(DatabaseManager *databaseManager, User *user);
+    static optional<User> get(DatabaseManager *databaseManager, string id);
 };
 
 #endif

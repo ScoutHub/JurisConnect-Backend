@@ -96,6 +96,8 @@ void setup_auth_routes(crow::App<ApiMiddleware> &app, DatabaseManager &database_
     /*
         route: /auth/refresh/token
         method: GET
+        headers:
+            X-REFRESH-TOKEN: string refresh_token
     */
     CROW_ROUTE(app, "/auth/refresh/token")([&database_manager](const crow::request &req)
     {

@@ -6,5 +6,6 @@
 #define RESPONSE_OK  200
 #define CREATED      201
 #define UNAUTHORIZED 401
+#define NOT_FOUND    404
 
 #endif
