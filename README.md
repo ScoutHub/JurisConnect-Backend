@@ -8,7 +8,7 @@ There is only one requirement :
 Why Docker ? Because container will build everything without install or include anything.
 
 # How to launch
-`docker-compose -f dockercompose.yml up --build`
+`docker compose up --build`
 
 and go to http://localhost:19000.
 
