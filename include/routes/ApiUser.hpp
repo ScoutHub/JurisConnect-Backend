@@ -30,11 +30,11 @@ void setup_user_routes(crow::App<ApiMiddleware> &app, DatabaseManager& database_
         return crow::response(RESPONSE_OK, json_resp);
     });
     /*
-        route: /api/users/
+        route: /api/users
         method: GET
         protected by token
     */
-    CROW_ROUTE(app, "/api/users/").CROW_MIDDLEWARES(app, ApiMiddleware)([&database_manager, &app](const crow::request &req)
+    CROW_ROUTE(app, "/api/users").CROW_MIDDLEWARES(app, ApiMiddleware)([&database_manager, &app](const crow::request &req)
     {
         ApiMiddleware::context& ctx = app.get_context<ApiMiddleware>(req);
         string id = ctx.id;
@@ -49,7 +49,7 @@ void setup_user_routes(crow::App<ApiMiddleware> &app, DatabaseManager& database_
         return crow::response(RESPONSE_OK, json_resp);
     });
     /*
-        route: /api/users/id
+        route: /api/users
         method: PUT
         protected by token
         body:
@@ -58,7 +58,7 @@ void setup_user_routes(crow::App<ApiMiddleware> &app, DatabaseManager& database_
             string email
             string username
     */
-    CROW_ROUTE(app, "/api/users/").CROW_MIDDLEWARES(app, ApiMiddleware).methods(crow::HTTPMethod::Put)([&database_manager, &app](const crow::request &req)
+    CROW_ROUTE(app, "/api/users").CROW_MIDDLEWARES(app, ApiMiddleware).methods(crow::HTTPMethod::Put)([&database_manager, &app](const crow::request &req)
     {
 		ApiMiddleware::context& ctx = app.get_context<ApiMiddleware>(req);
         string id = ctx.id;
@@ -82,4 +82,4 @@ void setup_user_routes(crow::App<ApiMiddleware> &app, DatabaseManager& database_
 }
 
 
-#endif
+#endif  
