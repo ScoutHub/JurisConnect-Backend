@@ -15,11 +15,6 @@ int main(void)
 	DatabaseManager database_manager;
 	crow::App<ApiMiddleware> app;
 
-	CROW_ROUTE(app, "/test")([&database_manager]()
-    {
-        return database_manager.generate_uuid();
-    });
-
 	setup_auth_routes(app, database_manager);
 	setup_user_routes(app, database_manager);
 
