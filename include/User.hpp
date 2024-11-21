@@ -28,8 +28,8 @@ public:
     {
         crow::json::wvalue json_obj;
         json_obj["id"] = m_id;
-        json_obj["lastName"] = m_lastname;
-        json_obj["firstName"] = m_firstname;
+        json_obj["last_name"] = m_lastname;
+        json_obj["first_name"] = m_firstname;
         json_obj["username"] = m_username;
         json_obj["email"] = m_email;
         return json_obj;
