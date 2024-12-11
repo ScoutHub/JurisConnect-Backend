@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-#include "User.hpp"
+#include "../user/User.hpp"
 
 using namespace std;
 
@@ -21,7 +21,7 @@ public:
 	~DatabaseManager() {}
 
 	static string keys;
-	
+
 	unique_ptr<sql::Connection> &get_conn();
 	static string generate_uuid();
 };

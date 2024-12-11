@@ -1,8 +1,8 @@
 #include <string>
 
-#include "Auth.hpp"
-#include "DatabaseManager.hpp"
-#include "User.hpp"
+#include "auth/Auth.hpp"
+#include "user/User.hpp"
+#include "utils/DatabaseManager.hpp"
 #include "bcrypt.h"
 
 #define ROUND 4

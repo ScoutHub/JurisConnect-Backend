@@ -1,5 +1,5 @@
-#include "User.hpp"
-#include "DatabaseManager.hpp"
+#include "user/User.hpp"
+#include "utils/DatabaseManager.hpp"
 
 vector<User> User::getAll(DatabaseManager *databaseManager)
 {

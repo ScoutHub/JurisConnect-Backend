@@ -3,8 +3,8 @@
 #include <iostream>
 
 #include "jwt/jwt.hpp"
-#include "Token.hpp"
-#include "Logger.hpp"
+#include "auth/Token.hpp"
+#include "utils/Logger.hpp"
 
 using namespace jwt::params;
 using namespace std;

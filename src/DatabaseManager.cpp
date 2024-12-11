@@ -5,9 +5,9 @@
 #include <vector>
 #include <memory>
 
-#include "DatabaseManager.hpp"
-#include "Logger.hpp"
-#include "User.hpp"
+#include "utils/DatabaseManager.hpp"
+#include "utils/Logger.hpp"
+#include "user/User.hpp"
 
 using namespace std;
 

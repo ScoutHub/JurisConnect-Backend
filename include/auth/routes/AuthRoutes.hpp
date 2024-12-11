@@ -7,9 +7,9 @@
 #include "crow.h"
 #include "jwt/jwt.hpp"
 
-#include "DatabaseManager.hpp"
-#include "Auth.hpp"
-#include "Token.hpp"
+#include "utils/DatabaseManager.hpp"
+#include "../Auth.hpp"
+#include "../Token.hpp"
 
 #include "utils/HttpUtils.hpp"
 #include "utils/ApiMiddleware.hpp"
@@ -30,7 +30,7 @@ crow::json::wvalue generate_json_token(string &id)
     return json_resp;
 }
 
-void setup_auth_routes(crow::App<ApiMiddleware> &app, DatabaseManager &database_manager)
+void setup_auth_routes(crow::App<ApiMiddleware, crow::CORSHandler> &app, DatabaseManager &database_manager)
 {
     /*
         route: /auth/login

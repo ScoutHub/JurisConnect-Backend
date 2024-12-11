@@ -2,15 +2,15 @@
 #define _API_USER_H
 
 #include "crow.h"
-#include "DatabaseManager.hpp"
-#include "User.hpp"
+#include "utils/DatabaseManager.hpp"
+#include "../User.hpp"
 
 #include "utils/HttpUtils.hpp"
 #include "utils/ApiMiddleware.hpp"
 
 using namespace std;
 
-void setup_user_routes(crow::App<ApiMiddleware> &app, DatabaseManager& database_manager) {
+void setup_user_routes(crow::App<ApiMiddleware, crow::CORSHandler> &app, DatabaseManager& database_manager) {
     /*
         route: /api/users
         method: GET
@@ -82,4 +82,4 @@ void setup_user_routes(crow::App<ApiMiddleware> &app, DatabaseManager& database_
 }
 
 
-#endif  
+#endif

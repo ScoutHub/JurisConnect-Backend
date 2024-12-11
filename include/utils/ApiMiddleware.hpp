@@ -5,7 +5,7 @@
 #include <string>
 
 #include "crow.h"
-#include "Token.hpp"
+#include "auth/Token.hpp"
 
 using namespace std;
 
