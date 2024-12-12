@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS jurisconnect;
-USE jurisconnect;
+CREATE DATABASE IF NOT EXISTS themis;
+USE themis;
 
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(20) PRIMARY KEY,
