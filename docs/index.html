@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="min-h-screen w-full flex flex-col justify-between">
+    <header class="p-8 text-center bg-blue-400 text-white">
+      <h1 class="text-5xl font-medium">Documentation</h1>
+    </header>
+    <main class="w-full h-full flex flex-col gap-2 p-4" id="routes"></main>
+    <footer class="p-8 text-center bg-blue-400 text-white">
+      <p>Copyright © Thémis</p>
+    </footer>
+    <script type="text/javascript">
+      const routes = [
+        {
+          path: "/auth/login",
+          name: "Login",
+          description: "Login to api",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: {
+            email: { type: "string", example: "johndoe@example.com" },
+            password: { type: "string", example: "Password" },
+          },
+        },
+        {
+          path: "/auth/register",
+          name: "Register",
+          description: "Register to api",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: {
+            email: { type: "string", example: "johndoe@example.com" },
+            username: { type: "string", example: "johndoe" },
+            first_name: { type: "string", example: "john" },
+            last_name: { type: "string", example: "doe" },
+            password: { type: "string", example: "Password123/" },
+            confirm_password: { type: "string", example: "Password123/" },
+          },
+        },
+        {
+          path: "/auth/refresh/token",
+          name: "Refresh token",
+          description: "Get a new access and refresh token",
+          method: "GET",
+          headers: {
+            "X-REFRESH-TOKEN": "token",
+          },
+        },
+        {
+          path: "/api/users",
+          name: "User information",
+          description: "Get user information",
+          method: "GET",
+          headers: {
+            Authorization: "Bearer token",
+          },
+        },
+        {
+          path: "/api/users/list",
+          name: "User list",
+          description: "Get user list",
+          method: "GET",
+          headers: {
+            Authorization: "Bearer token",
+          },
+        },
+        {
+          path: "/api/users",
+          name: "User information update",
+          description: "Update user information",
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer token",
+            "Content-Type": "application/json",
+          },
+          body: {
+            email: { type: "string", example: "johndoe@example.com" },
+            username: { type: "string", example: "johndoee" },
+            first_name: { type: "string", example: "john" },
+            last_name: { type: "string", example: "doe" },
+          },
+        },
+      ];
+      let routesElt = document.getElementById("routes");
+      routes.map((route) => {
+        // Header div
+        //
+        const div = document.createElement("div");
+        const header = document.createElement("div");
+        header.className =
+          "p-4 bg-white shadow-md rounded-md hover:bg-gray-100 transition";
+        header.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-lg font-semibold">${route.name}</h2>
+              <p class="text-sm text-gray-600">${route.path}</p>
+            </div>
+            <span class="text-gray-600">+</span>
+          </div>
+        `;
+        //
+        // Content div
+        // Headers object
+        const content = document.createElement("div");
+        content.className =
+          "mt-2 text-sm text-gray-600 hidden p-4 w-full h-full";
+        content.innerHTML = `
+            <p>${route.description}</p>
+            <p class="mt-1"><strong>Path:</strong> ${route.path}</p>
+        `;
+        if (route.headers) {
+          content.innerHTML += `
+              <p class="mt-2">Headers </p>
+          `;
+          Object.keys(route.headers).map((header) => {
+            content.innerHTML += `
+              <code class="text-white bg-blue-400 w-full flex p-3 rounded-md mt-2">${header}: ${route.headers[header]}</code>
+            `;
+          });
+        }
+        // Body object
+        if (route.body) {
+          content.innerHTML += `
+              <p class="mt-2">Body </p>
+          `;
+          Object.keys(route.body).map((param) => {
+            let bodyContent = `${param}: `;
+            Object.keys(route.body[param]).map((key, i) => {
+              bodyContent += `${key} = ${route.body[param][key]}, `;
+            });
+            bodyContent = bodyContent.slice(0, -1);
+            content.innerHTML += `
+              <code class="text-white bg-blue-400 w-full flex p-3 rounded-md mt-2">${bodyContent.slice(
+                0,
+                -1
+              )}</code>
+            `;
+          });
+        }
+        //
+
+        header.addEventListener("click", () => {
+          const isVisible = !content.classList.contains("hidden");
+          content.classList.toggle("hidden", isVisible);
+          header.querySelector("span").textContent = isVisible ? "+" : "-";
+        });
+
+        div.appendChild(header);
+        div.appendChild(content);
+        routesElt.appendChild(div);
+      });
+    </script>
+  </body>
+</html>
