@@ -3,4 +3,4 @@
 .venv
 
 scripts/*.json
-.DS_Store
+.DS_Storedocs/parser
