@@ -33,11 +33,14 @@ crow::json::wvalue generate_json_token(string &id)
 void setup_auth_routes(crow::App<ApiMiddleware, crow::CORSHandler> &app, DatabaseManager &database_manager)
 {
     /*
-        route: /auth/login
-        method: POST
-        body:
-            string email
-            string password
+        @Doc
+        @Route("/auth/login")
+        @Name("Login")
+        @Description("Login user to api")
+        @Method(POST)
+        @Header(Content-Type: application/json)
+        @Body(string email)
+        @Body(string password)
     */
     CROW_ROUTE(app, "/auth/login").methods(crow::HTTPMethod::Post)([&database_manager](const crow::request &req)
     {
@@ -60,15 +63,17 @@ void setup_auth_routes(crow::App<ApiMiddleware, crow::CORSHandler> &app, Databas
     });
 
     /*
-        route: /auth/register
-        method: POST
-        body:
-            string email
-            string username
-            string firstName
-            string lastName
-            string password
-            string confirmPassword
+        @Doc
+        @Route("/auth/register")
+        @Name("Register")
+        @Description("Register user to api")
+        @Method(POST)
+        @Header(Content-Type: application/json)
+        @Body(string email)
+        @Body(string username)
+        @Body(string first_name)
+        @Body(string last_name)
+        @Body(string confirm_password)
     */
     CROW_ROUTE(app, "/auth/register").methods(crow::HTTPMethod::Post)([&database_manager](const crow::request &req)
     {
@@ -97,10 +102,12 @@ void setup_auth_routes(crow::App<ApiMiddleware, crow::CORSHandler> &app, Databas
     });
 
     /*
-        route: /auth/refresh/token
-        method: GET
-        headers:
-            X-REFRESH-TOKEN: string refresh_token
+        @Doc
+        @Route("/auth/refresh/token")
+        @Name("Get refresh token")
+        @Description("Get new access and refresh token")
+        @Method(GET)
+        @Header(X-REFRESH-TOKEN: refresh_token)
     */
     CROW_ROUTE(app, "/auth/refresh/token")([&database_manager](const crow::request &req)
     {
