@@ -1,7 +1,10 @@
-FROM gcc:14.2.0
+FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
 	git \
+	gcc \
+	g++ \
+	wget \
 	cmake \
 	libboost-dev \
 	libboost-regex-dev \
