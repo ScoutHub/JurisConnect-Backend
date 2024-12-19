@@ -1,6 +1,7 @@
 .env
-.vscode
+.vscode/
 .venv
 
 scripts/*.json
 .DS_Store
+docs/parser

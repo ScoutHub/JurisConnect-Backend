@@ -28,6 +28,12 @@ int main(void)
 	setup_auth_routes(app, database_manager);
 	setup_user_routes(app, database_manager);
 
+	CROW_ROUTE(app, "/doc")
+    ([](const crow::request&, crow::response& res) {
+        res.set_static_file_info("docs/index.html");
+        res.end();
+    });
+
 	app.port(LISTEN_PORT).multithreaded().run();
 	return 0;
 }
