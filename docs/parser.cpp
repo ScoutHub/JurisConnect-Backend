@@ -8,7 +8,7 @@ using namespace std;
 
 int main(void)
 {
-    map<string, void (*)(Docs *docs, size_t doc_index, string *line_content)> array_functions{
+    map<string, void (*)(Docs *docs, size_t doc_index, string *line_content)> functions_map{
         {"@Route", extract_route},
         {"@Method", extract_method},
         {"@Name", extract_name},
@@ -16,6 +16,8 @@ int main(void)
         {"@Header", extract_header},
         {"@Body", extract_body},
     };
+    map<string, void (*)(Docs *docs, size_t doc_index, string *line_content)>::iterator map_begin = functions_map.begin();
+    map<string, void (*)(Docs *docs, size_t doc_index, string *line_content)>::iterator map_end = functions_map.end();
 
     Docs docs = {
         .size = 0};
@@ -40,7 +42,7 @@ int main(void)
                 {
                     if (line_content.find("*/") != string::npos)
                         break;
-                    for (map<string, void (*)(Docs *docs, size_t doc_index, string *line_content)>::iterator it = array_functions.begin(); it != array_functions.end(); ++it)
+                    for (map<string, void (*)(Docs *docs, size_t doc_index, string *line_content)>::iterator it = map_begin; it != map_end; ++it)
                     {
                         if (line_content.find(it->first) != string::npos)
                             it->second(&docs, doc_index, &line_content);
