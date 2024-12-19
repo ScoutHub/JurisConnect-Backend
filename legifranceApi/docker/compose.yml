@@ -1,0 +1,41 @@
+services:
+  legifrance-database:
+    container_name: legifrance-database
+    image: postgres:17.2-alpine
+    ports:
+      - "19001:5432" 
+    volumes:
+      - ./legifrance.sql:/docker-entrypoint-initdb.d/legifrance.sql
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  legifrance-manager:
+    container_name: legifrance-manager
+    image: adminer:4.8.1
+    ports:
+      - "8080:8080"
+    depends_on:
+      - legifrance-database
+    environment:
+      ADMINER_DESIGN: dracula
+
+  legifrance-scripts:
+    container_name: legifrance-scripts
+    build:
+      context: ../
+      dockerfile: scripts/Dockerfile
+    depends_on:
+      legifrance-database:
+        condition: service_healthy
+    volumes:
+      - ./legifrance.sql:/legifrance.sql
+    env_file:
+      - .env
+
+volumes:
+  legifrance-database:
