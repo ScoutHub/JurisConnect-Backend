@@ -12,4 +12,7 @@ COPY scripts/ .
 
 COPY output/ /app/output/
 
-CMD ["python", "parse_json.py"]
+RUN chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]
+
