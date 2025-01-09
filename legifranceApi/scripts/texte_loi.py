@@ -70,7 +70,7 @@ def get_articles_ref(token: str) -> List[object]:
                 {
                     "criteres": [
                     {
-                        "valeur": "Code du Travail",
+                        "valeur": os.getenv('CODE'),
                         "operateur": "ET",
                         "typeRecherche": "EXACTE"
                     }
@@ -115,7 +115,7 @@ def get_articles(token: str) -> List[object]:
     data = {
         "searchedString": "constitution 1958",
         "date": "2021-07-01",
-        "textId": "LEGITEXT000006072050"
+        "textId": os.getenv('TEXTID'),
     }
     data = dumps(data)
     articles = []
@@ -169,7 +169,7 @@ def clean_json(file_path, output_path):
     return output_path
 
 def insert_or_get_id(cursor, table, unique_columns, data):
-    print(f"Processing table {table} with data: {data}")
+    # print(f"Processing table {table} with data: {data}")
     columns = ", ".join(data.keys())
     placeholders = ", ".join(["%s"] * len(data))
     conflict_columns = ", ".join(unique_columns)
@@ -182,7 +182,7 @@ def insert_or_get_id(cursor, table, unique_columns, data):
     cursor.execute(query, tuple(data.values()))
     result = cursor.fetchone()
     if result:
-        print(f"ID inserted in {table}: {result[0]}")
+        # print(f"ID inserted in {table}: {result[0]}")
         return result[0]
 
     where_clause = " AND ".join([f"{col} = %s" for col in unique_columns])
@@ -190,9 +190,9 @@ def insert_or_get_id(cursor, table, unique_columns, data):
     cursor.execute(query, tuple(data[col] for col in unique_columns))
     result = cursor.fetchone()
     if result:
-        print(f"Existing ID in {table}: {result[0]}")
+        # print(f"Existing ID in {table}: {result[0]}")
         return result[0]
-    print(f"No data inserted or found in {table}.")
+    # print(f"No data inserted or found in {table}.")
     return None
 
 def process_article(cursor, article, part_id, partie_id, livre_id, titre_id, chapitre_id, section_id, sous_section_id):
@@ -226,17 +226,17 @@ def process_article(cursor, article, part_id, partie_id, livre_id, titre_id, cha
         "section_id": section_id,
         "sous_section_id": sous_section_id,
     }
-    print(f"Processing article: {article_data}")
+    # print(f"Processing article: {article_data}")
     insert_or_get_id(cursor, "articles", ["title", "part_id", "partie_id", "livre_id", "titre_id", "chapitre_id", "section_id", "sous_section_id"], article_data)
 
 def process_data(cursor, data):
 
     for item in data:
         if "pathTitle" not in item or not item["pathTitle"]:
-            print(f"Warning: 'pathTitle' missing or invalid for item ID {item.get('id', 'Unknown ID')}")
+            # print(f"Warning: 'pathTitle' missing or invalid for item ID {item.get('id', 'Unknown ID')}")
             item["pathTitle"] = ["Default Path", "Unclassified"]
         
-        print(f"Processing pathTitle: {item['pathTitle']}")
+        # print(f"Processing pathTitle: {item['pathTitle']}")
 
         part_title = item["pathTitle"][0]
         part_id = insert_or_get_id(cursor, "parts", ["title"], {"title": part_title})
@@ -301,21 +301,77 @@ def parse_json_to_db(file_path, db_config):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-if __name__ == "__main__":
-    token = get_token()
-    if token:
-        articles_ref = get_articles_ref(token)
-        save_articles_ref(articles_ref)
-        articles = get_articles(token)
-        save_articles(articles)
+import os
+from dotenv import load_dotenv
 
-        # Run the second script after the first script has completed
-        input_file_path = "content_articles.json"
-        db_config = {
-            'dbname': os.getenv('DB_NAME'),
-            'user': os.getenv('DB_USER'),
-            'password': os.getenv('DB_PASSWORD'),
-            'host': os.getenv('DB_HOST'),
-            'port': os.getenv('DB_PORT')
-        }
-        parse_json_to_db(input_file_path, db_config)
+load_dotenv()
+
+def process_code(code: str, textid: str):
+    """Process a single code."""
+    os.environ['CODE'] = code
+    os.environ['TEXTID'] = textid
+
+    logging.info(f"Fetching data for CODE: {code}, TEXTID: {textid}")
+    
+    # 1. Obtenir le token
+    token = get_token()
+    if token is None:
+        logging.error(f"Failed to get token for CODE={code}, TEXTID={textid}")
+        return
+
+    logging.info(f"Successfully obtained token for CODE: {code}")
+
+    # 2. Obtenir les références des articles
+    logging.info(f"Fetching article references for CODE: {code}")
+    articles_ref = get_articles_ref(token)
+    save_articles_ref(articles_ref)
+    logging.info(f"Article references saved for CODE: {code}")
+
+    # 3. Obtenir le contenu des articles
+    logging.info(f"Fetching article content for CODE: {code}")
+    articles = get_articles(token)
+    save_articles(articles)
+    logging.info(f"Article content saved for CODE: {code}")
+
+    # 4. Charger les données dans la base de données
+    logging.info(f"Inserting data into the database for CODE: {code}")
+    input_file_path = "content_articles.json"
+    
+    # Set the DB_HOST based on the code
+    db_host = "code-penal-db" if "pénal" in code else "code-travail-db" if "travail" in code else "code-actionSociale-db" if "action sociale et des familles" in code else "code-artisanat-db" if "artisanat" in code else "code-assurances-db" if "assurances" in code else None
+    
+    db_config = {
+        'dbname': os.getenv('DB_NAME'),
+        'user': os.getenv('DB_USER'),
+        'password': os.getenv('DB_PASSWORD'),
+        'host': db_host,
+        'port': os.getenv('DB_PORT')
+    }
+    parse_json_to_db(input_file_path, db_config)
+    logging.info(f"Database insertion completed for CODE: {code}")
+
+if __name__ == "__main__":
+    # Charger les variables d'environnement pour les différents codes
+    codes = os.getenv("CODE", "").split(",")
+    textids = os.getenv("TEXTID", "").split(",")
+
+    # Vérifiez si les variables sont correctement chargées
+    if not codes or not textids:
+        logging.error("CODES or TEXTIDS are missing in the .env file.")
+        exit(1)
+    
+    if len(codes) != len(textids):
+        logging.error("Mismatch between number of CODES and TEXTIDS in .env file.")
+        exit(1)
+
+    for code, textid in zip(codes, textids):
+        code = code.strip()  # Supprime les espaces superflus
+        textid = textid.strip()
+
+        if not code or not textid:
+            logging.warning(f"Skipping processing due to empty CODE or TEXTID: CODE='{code}', TEXTID='{textid}'")
+            continue
+
+        logging.info(f"Starting processing for CODE: {code} with TEXTID: {textid}")
+        process_code(code, textid)
+        logging.info(f"Finished processing for CODE: {code} with TEXTID: {textid}")
