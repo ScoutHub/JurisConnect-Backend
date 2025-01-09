@@ -338,13 +338,92 @@ def process_code(code: str, textid: str):
     input_file_path = "content_articles.json"
     
     # Set the DB_HOST based on the code
-    db_host = "code-penal-db" if "pénal" in code else "code-travail-db" if "travail" in code else "code-actionSociale-db" if "action sociale et des familles" in code else "code-artisanat-db" if "artisanat" in code else "code-assurances-db" if "assurances" in code else None
+    db_name = (
+        "code_penal" if "pénal" in code else
+        "code_du_travail" if "travail" in code else
+        "code_de_l_action_sociale_et_des_familles" if "action sociale et des familles" in code else
+        "code_de_l_artisanat" if "artisanat" in code else
+        "code_des_assurances" if "assurances" in code else
+        "code_de_l_aviation_civile" if "aviation civile" in code else
+        "code_du_cinéma_et_de_l_image_animée" if "cinéma et de l'image animée" in code else
+        "code_civil" if "civil" in code else
+        "code_de_la_commande_publique" if "commande publique" in code else
+        "code_de_commerce" if "commerce" in code else
+        "code_des_communes" if "communes" in code else
+        "code_des_communes_de_la_nouvelle_calédonie" if "communes de la Nouvelle-Calédonie" in code else
+        "code_de_la_consommation" if "consommation" in code else
+        "code_de_la_construction_et_de_l_habitation" if "construction et de l'habitation" in code else
+        "code_de_la_défense" if "défense" in code else
+        "code_de_déontologie_des_architectes" if "déontologie des architectes" in code else
+        "code_disciplinaire_et_pénal_de_la_marine_marchande" if "disciplinaire et pénal de la marine marchande" in code else
+        "code_du_domaine_de_l_etat" if "domaine de l'Etat" in code else
+        "code_du_domaine_de_l_etat_et_des_collectivités_publiques_applicable_à_la_collectivité_territoriale_de_mayotte" if "domaine de l'Etat et des collectivités publiques applicable à la collectivité territoriale de Mayotte" in code else
+        "code_du_domaine_public_fluvial_et_de_la_navigation_intérieure" if "domaine public fluvial et de la navigation intérieure" in code else
+        "code_des_douanes" if "douanes" in code else
+        "code_des_douanes_de_mayotte" if "douanes de Mayotte" in code else
+        "code_de_l_éducation" if "éducation" in code else
+        "code_électoral" if "électoral" in code else
+        "code_de_l_énergie" if "énergie" in code else
+        "code_d_entrée_et_séjour_des_étrangers_et_du_droit_d_asile" if "entrée et du séjour des étrangers et du droit d'asile" in code else
+        "code_de_l_environnement" if "environnement" in code else
+        "code_de_l_expropriation_pour_cause_d_utilité_publique" if "expropriation pour cause d'utilité publique" in code else
+        "code_de_la_famille_et_de_l_aide_sociale" if "famille et de l'aide sociale" in code else
+        "code_forestier_nouveau" if "forestier (nouveau)" in code else
+        "code_général_de_la_fonction_publique" if "général de la fonction publique" in code else
+        "code_général_de_la_propriété_des_personnes_publiques" if "général de la propriété des personnes publiques" in code else
+        "code_général_des_collectivités_territoriales" if "général des collectivités territoriales" in code else
+        "code_général_des_impôts" if "général des impôts" in code else
+        "code_général_des_impôts_annexe_1" if "général des impôts, annexe I" in code else
+        "code_général_des_impôts_annexe_2" if "général des impôts, annexe II" in code else
+        "code_général_des_impôts_annexe_3" if "général des impôts, annexe III" in code else
+        "code_général_des_impôts_annexe_4" if "général des impôts, annexe IV" in code else
+        "code_des_impositions_sur_les_biens_et_services" if "impositions sur les biens et services" in code else
+        "code_des_instruments_monétaires_et_des_médailles" if "instruments monétaires et des médailles" in code else
+        "code_des_juridictions_financières" if "juridictions financières" in code else
+        "code_de_justice_administrative" if "justice administrative" in code else
+        "code_de_justice_militaire_nouveau" if "justice militaire (nouveau)" in code else
+        "code_de_la_justice_pénale_des_mineurs" if "justice pénale des mineurs" in code else
+        "code_de_la_légion_d_honneur" if "légion d'honneur, de la médaille militaire et de l'ordre national du mérite" in code else
+        "livre_des_procédures_fiscales" if "livre des procédures fiscales" in code else
+        "code_minier" if "minier" in code else
+        "code_minier_nouveau" if "minier (nouveau)" in code else
+        "code_monétaire_et_financier" if "monétaire et financier" in code else
+        "code_de_la_mutualité" if "mutualité" in code else
+        "code_de_l_organisation_judiciaire" if "organisation judiciaire" in code else
+        "code_du_patrimoine" if "patrimoine" in code else
+        "code_pénitentiaire" if "pénitentiaire" in code else
+        "code_des_pensions_civiles_et_militaires_de_retraite" if "pensions civiles et militaires de retraite" in code else
+        "code_des_pensions_de_retraite_des_marins_français_du_commerce_de_pêche_ou_de_plaisance" if "pensions de retraite des marins français du commerce, de pêche ou de plaisance" in code else
+        "code_des_pensions_militaires_d_invalidité_et_des_victimes_de_guerre" if "pensions militaires d'invalidité et des victimes de guerre" in code else
+        "code_des_ports_maritimes" if "ports maritimes" in code else
+        "code_des_postes_et_des_communications_électroniques" if "postes et des communications électroniques" in code else
+        "code_de_procédure_civile" if "procédure civile" in code else
+        "code_de_procédure_pénale" if "procédure pénale" in code else
+        "code_des_procédures_civiles_d_exécution" if "procédures civiles d'exécution" in code else
+        "code_de_la_propriété_intellectuelle" if "propriété intellectuelle" in code else
+        "code_de_la_recherche" if "recherche" in code else
+        "code_des_relations_entre_le_public_et_l_administration" if "relations entre le public et l'administration" in code else
+        "code_de_la_route" if "route" in code else
+        "code_rural_ancien" if "rural (ancien)" in code else
+        "code_rural_et_de_la_pêche_maritime" if "rural et de la pêche maritime" in code else
+        "code_de_la_santé_publique" if "santé publique" in code else
+        "code_de_la_sécurité_intérieure" if "sécurité intérieure" in code else
+        "code_de_la_sécurité_sociale" if "sécurité sociale" in code else
+        "code_du_service_national" if "service national" in code else
+        "code_du_sport" if "sport" in code else
+        "code_du_tourisme" if "tourisme" in code else
+        "code_des_transports" if "transports" in code else
+        "code_du_travail_maritime" if "travail maritime" in code else
+        "code_de_l_urbanisme" if "urbanisme" in code else
+        "code_de_la_voirie_routière" if "voirie routière" in code else
+        None
+    )
     
     db_config = {
-        'dbname': os.getenv('DB_NAME'),
+        'dbname': db_name,
         'user': os.getenv('DB_USER'),
         'password': os.getenv('DB_PASSWORD'),
-        'host': db_host,
+        'host': os.getenv('DB_HOST'),
         'port': os.getenv('DB_PORT')
     }
     parse_json_to_db(input_file_path, db_config)

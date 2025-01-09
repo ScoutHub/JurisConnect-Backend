@@ -1,83 +1,13 @@
 services:
-  code-penal-db:
-    container_name: code-penal-db
+  legifrance-db:
+    container_name: legifrance-db
     image: postgres:17.2-alpine
     ports:
       - "19001:5432"
     volumes:
       - ./legifrance.sql:/docker-entrypoint-initdb.d/legifrance.sql
-    environment:
-      POSTGRES_USER: legifrance
-      POSTGRES_PASSWORD: legifrance123
-      POSTGRES_DB: legifrance
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U legifrance"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  code-travail-db:
-    container_name: code-travail-db
-    image: postgres:17.2-alpine
-    ports:
-      - "19002:5432"
-    volumes:
-      - ./legifrance.sql:/docker-entrypoint-initdb.d/legifrance.sql
-    environment:
-      POSTGRES_USER: legifrance
-      POSTGRES_PASSWORD: legifrance123
-      POSTGRES_DB: legifrance
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U legifrance"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  code-actionSociale-db:
-    container_name: code-actionSociale-db
-    image: postgres:17.2-alpine
-    ports:
-      - "19003:5432"
-    volumes:
-      - ./legifrance.sql:/docker-entrypoint-initdb.d/legifrance.sql
-    environment:
-      POSTGRES_USER: legifrance
-      POSTGRES_PASSWORD: legifrance123
-      POSTGRES_DB: legifrance
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U legifrance"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  code-artisanat-db:
-    container_name: code-artisanat-db
-    image: postgres:17.2-alpine
-    ports:
-      - "19004:5432"
-    volumes:
-      - ./legifrance.sql:/docker-entrypoint-initdb.d/legifrance.sql
-    environment:
-      POSTGRES_USER: legifrance
-      POSTGRES_PASSWORD: legifrance123
-      POSTGRES_DB: legifrance
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U legifrance"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  code-assurances-db:
-    container_name: code-assurances-db
-    image: postgres:17.2-alpine
-    ports:
-      - "19005:5432"
-    volumes:
-      - ./legifrance.sql:/docker-entrypoint-initdb.d/legifrance.sql
-    environment:
-      POSTGRES_USER: legifrance
-      POSTGRES_PASSWORD: legifrance123
-      POSTGRES_DB: legifrance
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U legifrance"]
       interval: 10s
@@ -90,9 +20,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - code-penal-db
-      - code-travail-db
-      - code-actionSociale-db
+      - legifrance-db
     environment:
       ADMINER_DESIGN: dracula
 
@@ -102,9 +30,7 @@ services:
       context: ../
       dockerfile: scripts/Dockerfile
     depends_on:
-      code-penal-db:
-        condition: service_healthy
-      code-travail-db:
+      legifrance-db:
         condition: service_healthy
     volumes:
       - ./legifrance.sql:/legifrance.sql
