@@ -5,3 +5,5 @@
 scripts/*.json
 .DS_Store
 docs/parser
+legifranceApi/docker/data/
+
