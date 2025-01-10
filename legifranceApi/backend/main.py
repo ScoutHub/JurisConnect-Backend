@@ -6,8 +6,12 @@ from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, NoResultFound
 from database import get_db
 from models import Part, Partie, Livre, Article, Section, SousSection, Chapitre
+from auth import get_api_key
+from logging_middleware import LoggingMiddleware 
 
 app = FastAPI()
+
+app.add_middleware(LoggingMiddleware)
 
 @app.get("/")
 def read_root():
@@ -48,7 +52,7 @@ async def general_exception_handler(request: Request, exc: Exception):
         content={"message": f"Server error: {str(exc)}"}
     )
 
-@app.get("/{db_name}/parties/")
+@app.get("/{db_name}/parties/", dependencies=[Depends(get_api_key)])
 async def get_parties(db_name: str, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Partie))
@@ -59,7 +63,7 @@ async def get_parties(db_name: str, db: AsyncSession = Depends(get_db)):
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.get("/{db_name}/parties/{partie_id}")
+@app.get("/{db_name}/parties/{partie_id}", dependencies=[Depends(get_api_key)])
 async def get_partie(db_name: str, partie_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Partie).where(Partie.id == partie_id))
@@ -70,7 +74,7 @@ async def get_partie(db_name: str, partie_id: int, db: AsyncSession = Depends(ge
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/parts/")
+@app.get("/{db_name}/parts/", dependencies=[Depends(get_api_key)])
 async def get_parts(db_name: str, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Part))
@@ -81,7 +85,7 @@ async def get_parts(db_name: str, db: AsyncSession = Depends(get_db)):
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/parts/{part_id}/parties/")
+@app.get("/{db_name}/parts/{part_id}/parties/", dependencies=[Depends(get_api_key)])
 async def get_parties(db_name: str, part_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Partie).where(Partie.part_id == part_id))
@@ -92,7 +96,7 @@ async def get_parties(db_name: str, part_id: int, db: AsyncSession = Depends(get
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/parts/{part_id}/parties/{partie_id}/livres/")
+@app.get("/{db_name}/parts/{part_id}/parties/{partie_id}/livres/", dependencies=[Depends(get_api_key)])
 async def get_livres(db_name: str, part_id: int, partie_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(
@@ -105,7 +109,7 @@ async def get_livres(db_name: str, part_id: int, partie_id: int, db: AsyncSessio
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/articles/")
+@app.get("/{db_name}/articles/", dependencies=[Depends(get_api_key)])
 async def get_articles(db_name: str, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Article))
@@ -116,7 +120,7 @@ async def get_articles(db_name: str, db: AsyncSession = Depends(get_db)):
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/articles/{article_id}")
+@app.get("/{db_name}/articles/{article_id}", dependencies=[Depends(get_api_key)])
 async def get_article(db_name: str, article_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Article).where(Article.id == article_id))
@@ -127,7 +131,7 @@ async def get_article(db_name: str, article_id: int, db: AsyncSession = Depends(
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/livres/")
+@app.get("/{db_name}/livres/", dependencies=[Depends(get_api_key)])
 async def get_livres(db_name: str, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Livre))
@@ -138,7 +142,7 @@ async def get_livres(db_name: str, db: AsyncSession = Depends(get_db)):
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/livres/{livre_id}")
+@app.get("/{db_name}/livres/{livre_id}", dependencies=[Depends(get_api_key)])
 async def get_livre(db_name: str, livre_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Livre).where(Livre.id == livre_id))
@@ -149,7 +153,7 @@ async def get_livre(db_name: str, livre_id: int, db: AsyncSession = Depends(get_
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/sections/")
+@app.get("/{db_name}/sections/", dependencies=[Depends(get_api_key)])
 async def get_sections(db_name: str, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Section))
@@ -160,7 +164,7 @@ async def get_sections(db_name: str, db: AsyncSession = Depends(get_db)):
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/sections/{section_id}")
+@app.get("/{db_name}/sections/{section_id}", dependencies=[Depends(get_api_key)])
 async def get_section(db_name: str, section_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Section).where(Section.id == section_id))
@@ -171,7 +175,7 @@ async def get_section(db_name: str, section_id: int, db: AsyncSession = Depends(
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/sous-sections/")
+@app.get("/{db_name}/sous-sections/", dependencies=[Depends(get_api_key)])
 async def get_soussections(db_name: str, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(SousSection))
@@ -182,7 +186,7 @@ async def get_soussections(db_name: str, db: AsyncSession = Depends(get_db)):
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/sous-sections/{soussection_id}")
+@app.get("/{db_name}/sous-sections/{soussection_id}", dependencies=[Depends(get_api_key)])
 async def get_soussection(db_name: str, soussection_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(SousSection).where(SousSection.id == soussection_id))
@@ -193,7 +197,7 @@ async def get_soussection(db_name: str, soussection_id: int, db: AsyncSession = 
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/chapitres/")
+@app.get("/{db_name}/chapitres/", dependencies=[Depends(get_api_key)])
 async def get_chapitres(db_name: str, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Chapitre))
@@ -204,7 +208,7 @@ async def get_chapitres(db_name: str, db: AsyncSession = Depends(get_db)):
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/{db_name}/chapitres/{chapitre_id}")
+@app.get("/{db_name}/chapitres/{chapitre_id}", dependencies=[Depends(get_api_key)])
 async def get_chapitre(db_name: str, chapitre_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(Chapitre).where(Chapitre.id == chapitre_id))

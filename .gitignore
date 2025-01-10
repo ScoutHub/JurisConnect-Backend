@@ -8,3 +8,6 @@ docs/parser
 legifranceApi/docker/data/
 
 legifranceApi/backend/__pycache__
+legifranceApi/backend/api_requests.log
+legifranceApi/docker/log.txt
+scripts/deeplearning.ipynb
