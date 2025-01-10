@@ -7,3 +7,4 @@ scripts/*.json
 docs/parser
 legifranceApi/docker/data/
 
+legifranceApi/backend/__pycache__
