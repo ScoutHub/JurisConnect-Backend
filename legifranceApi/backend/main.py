@@ -1,3 +1,4 @@
+import multiprocessing
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -8,10 +9,16 @@ from database import get_db
 from models import Part, Partie, Livre, Article, Section, SousSection, Chapitre
 from auth import get_api_key
 from logging_middleware import LoggingMiddleware 
+import uvicorn
+from gunicorn.app.base import BaseApplication
+import os
 
 app = FastAPI()
 
 app.add_middleware(LoggingMiddleware)
+
+dev = os.getenv("ENV") == "dev"
+prod = os.getenv("ENV") == "prod"
 
 @app.get("/")
 def read_root():
@@ -82,6 +89,17 @@ async def get_parts(db_name: str, db: AsyncSession = Depends(get_db)):
         if not parts:
             raise HTTPException(status_code=404, detail="Parts not found")
         return parts
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/{db_name}/parts/{part_id}", dependencies=[Depends(get_api_key)])
+async def get_part(db_name: str, part_id: int, db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(select(Part).where(Part.id == part_id))
+        part = result.scalars().first()
+        if not part:
+            raise HTTPException(status_code=404, detail="Part not found")
+        return part
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -218,3 +236,33 @@ async def get_chapitre(db_name: str, chapitre_id: int, db: AsyncSession = Depend
         return chapitre
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+if dev:
+    if __name__ == '__main__':
+        multiprocessing.freeze_support()  
+        uvicorn.run(app, host="0.0.0.0", port=8000, reload=False, workers=1)
+
+if prod:
+    class GunicornApp(BaseApplication):
+        def __init__(self, app, options=None):
+            self.options = options or {}
+            self.application = app
+            super().__init__()
+
+        def load_config(self):
+            for key, value in self.options.items():
+                if key in self.cfg.settings and value is not None:
+                    self.cfg.set(key.lower(), value)
+
+        def load(self):
+            return self.application
+
+    if __name__ == "__main__":
+        options = {
+            "bind": os.getenv("APP_BIND", "0.0.0.0:8000"),
+            "workers": int(os.getenv("WORKERS", 2)),
+            "loglevel": "error",
+            "worker_class": "uvicorn.workers.UvicornWorker", 
+        }
+
+        GunicornApp(app, options).run()

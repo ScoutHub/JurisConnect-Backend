@@ -1,0 +1,26 @@
+FROM python:3.9-alpine as build
+
+WORKDIR /app
+
+RUN apk add --no-cache binutils build-base libffi-dev
+
+COPY backend/requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN pip install --no-cache-dir pyinstaller
+
+COPY backend/ /app/
+
+RUN pyinstaller main.spec --clean
+
+FROM python:3.9-alpine as production
+
+WORKDIR /app
+
+COPY --from=build /app/dist/main /app/main
+
+RUN chmod +x /app/main/main
+
+EXPOSE 8000
+
+CMD ["/app/main/main"]

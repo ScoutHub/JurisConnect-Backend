@@ -24,15 +24,32 @@ services:
     environment:
       ADMINER_DESIGN: dracula
 
-  legifrance-scripts:
-    container_name: legifrance-scripts
+  # legifrance-scripts:
+  #   container_name: legifrance-scripts
+  #   build:
+  #     context: ../
+  #     dockerfile: scripts/Dockerfile
+  #   depends_on:
+  #     legifrance-db:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./legifrance.sql:/legifrance.sql
+  #   env_file:
+  #     - .env
+
+  legifrance-api:
+    container_name: legifrance-api
     build:
       context: ../
-      dockerfile: scripts/Dockerfile
+      dockerfile: backend/Dockerfile.${ENV:-dev}
+    ports:
+      - "8000:8000"
     depends_on:
-      legifrance-db:
-        condition: service_healthy
-    volumes:
-      - ./legifrance.sql:/legifrance.sql
+      - legifrance-db
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
