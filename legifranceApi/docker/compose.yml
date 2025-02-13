@@ -19,10 +19,12 @@ services:
     image: adminer:4.8.1
     ports:
       - "8080:8080"
-    depends_on:
-      - legifrance-db
+       # depends_on:
+    #   - legifrance-db
     environment:
       ADMINER_DESIGN: dracula
+      PHP_UPLOAD_MAX_FILESIZE: 128M
+      PHP_POST_MAX_SIZE: 128M
 
   # legifrance-scripts:
   #   container_name: legifrance-scripts
@@ -44,8 +46,8 @@ services:
       dockerfile: backend/Dockerfile.${ENV:-dev}
     ports:
       - "8000:8000"
-    depends_on:
-      - legifrance-db
+    # depends_on:
+    #   - legifrance-db
     env_file:
       - .env
     healthcheck:
